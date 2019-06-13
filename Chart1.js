@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {
     ScrollView,
     Image, View, Text, TextInput,
-    Dimensions, StyleSheet
+    Dimensions, StyleSheet, TouchableOpacity
     } from 'react-native';
 import {LineChart} from 'react-native-chart-kit';
 import ChartNode1 from './services/api';
@@ -37,6 +37,15 @@ export default class Chart1 extends Component {
         }
         this.chartNode1 = ChartNode1();
     }
+
+    handleback = () => {
+        this.props.navigation.navigate('HomeStack');
+    }
+
+    handlelogout = () => {
+        this.props.navigation.navigate('LoginStack');
+    }
+
     componentDidMount() {
         this.handleChart();
         this.state.socket.emit('chart 1', { message: 'chart 1'})
@@ -45,6 +54,7 @@ export default class Chart1 extends Component {
             this.state.socket.emit('chart 1', { message: 'chart 1'})
         })
     }
+
     handleChart = () => {
         this.chartNode1.getNode1().then((data) => {
             if (data.length1 > 0) {  
@@ -88,36 +98,51 @@ export default class Chart1 extends Component {
             }}>
                 <ScrollView>
                     <View style = {{
-                        height: 80,
+                        height: 70,
                         flex: 1,
-                        flexDirection: 'row'
+                        flexDirection: 'row',
+                        backgroundColor: '#072347'
                     }}>
-                        <View style = {{
+                        <TouchableOpacity style = {{
                             height: 80,
                             width: 70
-                        }}>
-                            <Image source = {require('./Images/graph.png')}
+                        }}
+                            onPress = {this.handleback}>
+                            <Image source = {require('./Images/back.png')}
                                 style = {{
-                                    height: 60,
-                                    width: 60,
-                                    marginTop: 10,
+                                    height: 40,
+                                    width: 40,
+                                    marginTop: 15,
                                     marginLeft: 10
                                 }}>
                             </Image>
-                        </View>
+                        </TouchableOpacity>
                         <View style = {{
                             flex: 1
                         }}>
                             <Text style = {{
                                 fontSize: 24,
                                 fontWeight: 'bold',
-                                marginTop: 25,
-                                marginLeft: 10,
-                                color: '#B38E98'
+                                marginTop: 18,
+                                marginLeft: 2,
+                                color: '#D4D7DB',
+                                textShadowColor: 'rgba(0, 0, 0, 1)',
+                                textShadowOffset: {width: -1, height: 1},
+                                textShadowRadius: 15
                             }}>
                             Chart Node 1
                             </Text>
                         </View>
+                        <TouchableOpacity onPress = {this.handlelogout}>
+                            <Image source = {require('./Images/237815.png')}
+                                style = {{
+                                    marginTop: 15,
+                                    height: 40,
+                                    width: 40,
+                                    marginRight: 10
+                                }}>
+                            </Image>
+                        </TouchableOpacity>
                     </View>
                     <View style = {styles.container}>
                         <Text style = {styles.text}>
@@ -197,6 +222,10 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 19,
         fontWeight: 'bold',
-        fontStyle: 'italic'
+        fontStyle: 'italic',
+        color: '#0984FF',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: -1, height: 1},
+        textShadowRadius: 15
     }
 })

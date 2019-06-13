@@ -11,16 +11,6 @@ import Control from './Control.js';
 import Home from './Home.js';
 
 const TabNavigatorCon = createMaterialTopTabNavigator({
-    Tab2: {
-        screen: TableNode2,
-        navigationOptions: {
-            tabBarLabel: "Table 2",
-            tabBarIcon: ({ navigation }) => (
-            <Image source = {require('./Images/checklist(1).png')}
-                style={{width: 30, height: 30}} />
-            )
-        },
-    },
     Tab1: {
         screen: TableNode1,
         navigationOptions: {
@@ -28,6 +18,16 @@ const TabNavigatorCon = createMaterialTopTabNavigator({
             tabBarIcon: ({ navigation }) => (
             <Image source = {require('./Images/checklist.png')}
                     style={{width: 32, height: 32}} />
+            )
+        },
+    },
+    Tab2: {
+        screen: TableNode2,
+        navigationOptions: {
+            tabBarLabel: "Table 2",
+            tabBarIcon: ({ navigation }) => (
+            <Image source = {require('./Images/checklist(1).png')}
+                style={{width: 30, height: 30}} />
             )
         },
     },

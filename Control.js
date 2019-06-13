@@ -85,6 +85,10 @@ export default class Control extends Component {
         }
     }
 
+    handleback = () => {
+        this.props.navigation.navigate("HomeStack");
+    }
+
     handlelogout = async () => {
         await AsyncStorage.clear();
         this.props.navigation.navigate('LoginStack');
@@ -100,27 +104,31 @@ export default class Control extends Component {
                 <View style = {{
                     flexDirection: 'row'
                 }}>
-                    <View style = {{
+                    <TouchableOpacity style = {{
                         width: 70
-                    }}>
+                    }}
+                        onPress = {this.handleback}>
                         <Image style = {{
-                            width: 60,
-                            height: 60,
-                            marginTop: 5,
+                            width: 40,
+                            height: 40,
+                            marginTop: 15,
                             marginLeft: 10
                         }}
-                            source = {require('./Images/smartphone.png')}>
+                            source = {require('./Images/back.png')}>
                         </Image>
-                    </View>
+                    </TouchableOpacity>
                     <View style = {{
                         flex: 1
                     }}>
                         <Text style = {{
-                            marginTop: 20,
-                            marginLeft: 10,
+                            marginTop: 18,
+                            marginLeft: 2,
                             fontSize: 25,
+                            color: '#5F7EFC',
                             fontWeight: 'bold',
-                            color: '#04A1B9'
+                            textShadowColor: 'rgba(0, 0, 0, 1)',
+                            textShadowOffset: {width: -1, height: 1},
+                            textShadowRadius: 15
                         }}>
                             Controllers
                         </Text>
@@ -136,11 +144,11 @@ export default class Control extends Component {
                                 <Image 
                                     style = {{
                                         marginLeft: 115,
-                                        marginTop: 10,
-                                        width: 50,
-                                        height: 50
+                                        marginTop: 15,
+                                        width: 40,
+                                        height: 40
                                     }}
-                                    source = {require('./Images/logout.png')}>
+                                    source = {require('./Images/237815.png')}>
                                 </Image>
                             </View>
                         </TouchableOpacity>
