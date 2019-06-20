@@ -9,6 +9,7 @@ import Chart2 from './Chart2';
 import LoginForm from './LoginForm';
 import Control from './Control.js';
 import Home from './Home.js';
+import Threshold from './Threshold';
 
 const TabNavigatorCon = createMaterialTopTabNavigator({
     Tab1: {
@@ -87,12 +88,21 @@ const MainStackNavigator = createStackNavigator({
             header: null,
         },
     },
+
+    Threshold: {
+        screen: Threshold,
+        navigationOptions: {
+            header: null,
+        }
+    },
+
     HomeStack: {
         screen: Home,
         navigationOptions: {
             header: null,
         }
     },
+
     AppStack: {
         screen: TabNavigatorCon,
         navigationOptions: {
@@ -101,7 +111,7 @@ const MainStackNavigator = createStackNavigator({
     }
 },
 {
-    initialRouteName: 'AppStack',
+    initialRouteName: 'HomeStack',
 });
 
 const AppContainer =  createAppContainer(MainStackNavigator);

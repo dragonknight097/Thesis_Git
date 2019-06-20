@@ -51,6 +51,21 @@ export default () => {
                 .then((result) => {
                     return result.data.PumpData
                 })
+        },
+        threshold: (datathreshold) => {
+            return axiosPost(baseURL + 'Router/Threshold', {
+                nhietdo_t: datathreshold.nhietdo_t,
+                doam_t: datathreshold.doam_t,
+                doamkhongkhi_t: datathreshold.doamkhongkhi_t,
+                doamdat_t: datathreshold.doamdat_t,
+                ph_t: datathreshold.ph_t,
+                oxyhoatan_t: datathreshold.oxyhoatan_t
+            })
+        },
+        getthreshold: () => {
+            return axiosGet(baseURL + 'Router/GetThreshold').then((result) => {
+                return result.data
+            })
         }
     }
     return services;

@@ -72,8 +72,7 @@ export default class Control extends Component {
     }
 
     ManualControl = (Manual) => {
-        if (this.state.On1 || this.state.On2 || this.state.On3) {
-
+        if (!this.state.isSwitchOn) {
             this.ApiPump.Pump({
                 Auto: this.state.isSwitchOn,
                 Timer: this.state.Timer,

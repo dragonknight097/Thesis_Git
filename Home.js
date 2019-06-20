@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {
     ScrollView,
     Image, View, Text, TextInput,
-    Dimensions, StyleSheet, TouchableOpacity, FlatList
+    Dimensions, StyleSheet, TouchableOpacity, FlatList, SectionList
     } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {LineChart} from 'react-native-chart-kit';
@@ -12,107 +12,23 @@ import { config } from './services/config';
 import ApiNode from './services/api';
 let { baseURL } = config;
 
-class FlatListItem extends Component {
-    constructor(props){
-        super(props);               
-    }  
-    render() {
-        return (
-            <View>
-                <Text style = {parameterstyle.number}>
-                    {this.props.item.nhietdo}°C
-                </Text>
-            </View>
-        )
-    }
-}
-
-class FlatListItem1 extends Component{
-    constructor(props){
-        super(props);       
-    }  
-    render() {
-        return (
-            <View>
-                <Text style = {parameterstyle.number}>
-                    {this.props.item.doam}%
-                </Text>
-            </View>
-        )
-    }
-}
-
-class FlatListItem2 extends Component{
-    constructor(props){
-        super(props);       
-    }  
-    render() {
-        return (
-            <View>
-                <Text style = {parameterstyle.number}>
-                    {this.props.item.doamkhongkhi}%
-                </Text>
-            </View>
-        )
-    }
-}
-
-class FlatListItem3 extends Component{
-    constructor(props){
-        super(props);       
-    }  
-    render() {
-        return (
-            <View>
-                <Text style = {parameterstyle.number}>
-                    {this.props.item.doamdat}%
-                </Text>
-            </View>
-        )
-    }
-}
-
-class FlatListItem4 extends Component{
-    constructor(props){
-        super(props);       
-    }  
-    render() {
-        return (
-            <View>
-                <Text style = {parameterstyle.number}>
-                    {this.props.item.ph}
-                </Text>
-            </View>
-        )
-    }
-}
-
-class FlatListItem5 extends Component{
-    constructor(props){
-        super(props);       
-    }  
-    render() {
-        return (
-            <View>
-                <Text style = {parameterstyle.number}>
-                    {this.props.item.oxyhoatan}%
-                </Text>
-            </View>
-        )
-    }
-}
-
 export default class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
             DataNode1: [],
             DataNode2: [],
+            Datathreshold: [],
+            time: new Date().toLocaleString(),
             socket: io(baseURL, {jsonp: false})
         }
         this.apiNode = ApiNode(); 
     }
 
+    gothreshold = () => {
+        this.props.navigation.navigate('Threshold')
+    }
+    
     handleInfo = () => {
         this.apiNode.getNode1().then((data) => {
             if (data.length1 > 0) {  
@@ -137,7 +53,7 @@ export default class Home extends Component {
                 })
                 this.setState({
                     length2: data.length2
-                })        
+                })      
             }
             else {
               alert('Error Get Data')
@@ -145,7 +61,24 @@ export default class Home extends Component {
         })
     }
 
+    handlethreshold = () => {
+        this.apiNode.getthreshold().then((data) => {
+            this.setState({
+                Datathreshold: data.thresholddata
+            })
+            this.setState({
+                lengththreshold: data.lengththreshold
+            })
+            //alert(data.lengththreshold)
+        })
+    }
+
+
+
     componentDidMount() {
+        this.intervalID = setInterval(
+            () => this.tick(),1000);
+        this.handlethreshold();
         this.handleInfo();
         this.handleInfo2();
         this.state.socket.emit('home 1', { message: 'home 1'});
@@ -153,8 +86,18 @@ export default class Home extends Component {
         this.state.socket.on('Data Home 1', async (data) => {
             await this.handleInfo();
             await this.handleInfo2();
+            await this.handlethreshold();
             this.state.socket.emit('home 1', { message: 'home 1'})
         })
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.intervalID);
+      }
+      tick() {
+        this.setState({
+          time: new Date().toLocaleString()
+        });
     }
 
     handlelogout = async () => {
@@ -164,6 +107,133 @@ export default class Home extends Component {
     
     handlegoin = () => {
         this.props.navigation.navigate('AppStack');
+    }
+
+    comparetemp = () => {
+        for (let i = this.state.lengththreshold - 1; i < this.state.lengththreshold; i++) {
+            for (let j = this.state.length1 - 1; j < this.state.length1; j++) {
+                if (this.state.Datathreshold[i].nhietdo_t < this.state.DataNode1[j].nhietdo) {
+                    return (
+                        <Text style = {parameterstyle.numberthreshold}>
+                            {this.state.DataNode1[j].nhietdo}°C
+                        </Text>
+                    )
+                }
+                else {
+                    return (
+                        <Text style = {parameterstyle.number}>
+                            {this.state.DataNode1[j].nhietdo}°C
+                        </Text>
+                    )
+                }
+            }
+        }
+    }
+
+    
+    comparehumi = () => {
+        for (let i = this.state.lengththreshold - 1; i < this.state.lengththreshold; i++) {
+            for (let j = this.state.length2 - 1; j < this.state.length2; j++) {
+                if (this.state.Datathreshold[i].doam_t < this.state.DataNode2[j].doam) {
+                    return (
+                        <Text style = {parameterstyle.numberthreshold}>
+                            {this.state.DataNode2[j].doam}%
+                        </Text>
+                    )
+                }
+                else {
+                    return (
+                        <Text style = {parameterstyle.number}>
+                            {this.state.DataNode2[j].doam}%
+                        </Text>
+                    )
+                }
+            }
+        }
+    }
+
+    compareairhumi = () => {
+        for (let i = this.state.lengththreshold - 1; i < this.state.lengththreshold; i++) {
+            for (let j = this.state.length1 - 1; j < this.state.length1; j++) {
+                if (this.state.Datathreshold[i].doamkhongkhi_t < this.state.DataNode1[j].doamkhongkhi) {
+                    return (
+                        <Text style = {parameterstyle.numberthreshold}>
+                            {this.state.DataNode1[j].doamkhongkhi}%
+                        </Text>
+                    )
+                }
+                else {
+                    return (
+                        <Text style = {parameterstyle.number}>
+                            {this.state.DataNode1[j].doamkhongkhi}%
+                        </Text>
+                    )
+                }
+            }
+        }
+    }
+
+    comparesoil = () => {
+        for (let i = this.state.lengththreshold - 1; i < this.state.lengththreshold; i++) {
+            for (let j = this.state.length1 - 1; j < this.state.length1; j++) {
+                if (this.state.Datathreshold[i].doamdat_t < this.state.DataNode1[j].doamdat) {
+                    return (
+                        <Text style = {parameterstyle.numberthreshold}>
+                            {this.state.DataNode1[j].doamdat}%
+                        </Text>
+                    )
+                }
+                else {
+                    return (
+                        <Text style = {parameterstyle.number}>
+                            {this.state.DataNode1[j].doamdat}%
+                        </Text>
+                    )
+                }
+            }
+        }
+    }
+
+    compareph = () => {
+        for (let i = this.state.lengththreshold - 1; i < this.state.lengththreshold; i++) {
+            for (let j = this.state.length2 - 1; j < this.state.length2; j++) {
+                if (this.state.Datathreshold[i].ph_t < this.state.DataNode2[j].ph) {
+                    return (
+                        <Text style = {parameterstyle.numberthreshold}>
+                            {this.state.DataNode2[j].ph}
+                        </Text>
+                    )
+                }
+                else {
+                    return (
+                        <Text style = {parameterstyle.number}>
+                            {this.state.DataNode2[j].ph}
+                        </Text>
+                    )
+                }
+            }
+        }
+    }
+
+    compareoxy = () => {
+        for (let i = this.state.lengththreshold - 1; i < this.state.lengththreshold; i++) {
+            for (let j = this.state.length2 - 1; j < this.state.length2; j++) {
+                if (this.state.Datathreshold[i].oxyhoatan_t < this.state.DataNode2[j].oxyhoatan) {
+                    return (
+                        <Text style = {parameterstyle.numberthreshold}>
+                            {this.state.DataNode2[j].oxyhoatan}%
+                        </Text>
+                    )
+                }
+                else {
+                    return (
+                        <Text style = {parameterstyle.number}>
+                            {this.state.DataNode2[j].oxyhoatan}%
+                        </Text>
+                    )
+                }
+            }
+        }
     }
 
     render() 
@@ -261,19 +331,9 @@ export default class Home extends Component {
                                             Temperature
                                         </Text>
                                     </View>
-                                    <FlatList
-                                        renderItem={
-                                            ({item, index}) => {
-                                                return (
-                                                    <FlatListItem 
-                                                        item = {item} index ={index}>
-                                                    </FlatListItem>
-                                                )
-                                            }
-                                        }
-                                        data={this.state.DataNode1.slice(this.state.length1 - 1)}
-                                        keyExtractor={(item, index) => index.toString()}>
-                                    </FlatList>
+                                    <View>
+                                        {this.comparetemp()}
+                                    </View>
                                 </View>
                             </View>
                             <View style = {parameterstyle.updatebackground}>
@@ -308,19 +368,9 @@ export default class Home extends Component {
                                                  Humidity
                                         </Text>
                                     </View>
-                                    <FlatList
-                                        renderItem={
-                                            ({item, index}) => {
-                                                return (
-                                                    <FlatListItem1
-                                                        item = {item} index ={index}>
-                                                    </FlatListItem1>
-                                                )
-                                            }
-                                        }
-                                        data={this.state.DataNode2.slice(this.state.length2 - 1)}
-                                        keyExtractor={(item, index) => index.toString()}>
-                                    </FlatList>
+                                    <View>
+                                        {this.comparehumi()}
+                                    </View>
                                 </View>
                             </View>
                             <View style = {parameterstyle.updatebackground}>
@@ -363,19 +413,9 @@ export default class Home extends Component {
                                             Air-Humi
                                         </Text>
                                     </View>
-                                    <FlatList
-                                        renderItem={
-                                            ({item, index}) => {
-                                                return (
-                                                    <FlatListItem2 
-                                                        item = {item} index ={index}>
-                                                    </FlatListItem2>
-                                                )
-                                            }
-                                        }
-                                        data={this.state.DataNode1.slice(this.state.length1 - 1)}
-                                        keyExtractor={(item, index) => index.toString()}>
-                                    </FlatList>
+                                    <View>
+                                        {this.compareairhumi()}
+                                    </View>
                                 </View>
                             </View>
                             <View style = {parameterstyle.updatebackground}>
@@ -410,19 +450,9 @@ export default class Home extends Component {
                                             Soil 
                                         </Text>
                                     </View>
-                                    <FlatList
-                                        renderItem={
-                                            ({item, index}) => {
-                                                return (
-                                                    <FlatListItem3
-                                                        item = {item} index ={index}>
-                                                    </FlatListItem3>
-                                                )
-                                            }
-                                        }
-                                        data={this.state.DataNode1.slice(this.state.length1 - 1)}
-                                        keyExtractor={(item, index) => index.toString()}>
-                                    </FlatList>
+                                    <View>
+                                        {this.comparesoil()}
+                                    </View>
                                 </View>
                             </View>
                             <View style = {parameterstyle.updatebackground}>
@@ -465,19 +495,9 @@ export default class Home extends Component {
                                             PH
                                         </Text>
                                     </View>
-                                    <FlatList
-                                        renderItem={
-                                            ({item, index}) => {
-                                                return (
-                                                    <FlatListItem4 
-                                                        item = {item} index ={index}>
-                                                    </FlatListItem4>
-                                                )
-                                            }
-                                        }
-                                        data={this.state.DataNode2.slice(this.state.length2 - 1)}
-                                        keyExtractor={(item, index) => index.toString()}>
-                                    </FlatList>
+                                    <View>
+                                        {this.compareph()}
+                                    </View>
                                 </View>
                             </View>
                             <View style = {parameterstyle.updatebackground}>
@@ -512,19 +532,9 @@ export default class Home extends Component {
                                             Oxygen
                                         </Text>
                                     </View>
-                                    <FlatList
-                                        renderItem={
-                                            ({item, index}) => {
-                                                return (
-                                                    <FlatListItem5 
-                                                        item = {item} index ={index}>
-                                                    </FlatListItem5>
-                                                )
-                                            }
-                                        }
-                                        data={this.state.DataNode2.slice(this.state.length2 - 1)}
-                                        keyExtractor={(item, index) => index.toString()}>
-                                    </FlatList>
+                                    <View>
+                                        {this.compareoxy()}
+                                    </View>
                                 </View>
                             </View>
                             <View style = {parameterstyle.updatebackground}>
@@ -544,6 +554,35 @@ export default class Home extends Component {
                         </View>
                     </View>
                 </View>
+                <TouchableOpacity style = {{
+                    marginTop: 12,
+                    borderRadius: 20,
+                    marginLeft: 150,
+                    height: 60,
+                    width: 120,
+                    backgroundColor: '#072347'
+                }}
+                    onPress = {this.gothreshold}>
+                    <Text style = {{
+                        marginTop: 15,
+                        textAlign: 'center',
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                        color: '#4694FA'
+                    }}>
+                        Threshold
+                    </Text>
+                </TouchableOpacity>
+                    <View>
+                        <Text style = {{
+                            marginLeft: 100,
+                            marginTop: 8,
+                            fontSize: 18,
+                            color: '#4694FA'
+                        }}>
+                            {this.state.time}
+                        </Text>
+                    </View>
             </View>
         )
     }
@@ -671,5 +710,12 @@ const parameterstyle = StyleSheet.create({
         marginLeft: 2,
         marginTop: 3,
         fontStyle: 'italic'
-    }
+    },
+    numberthreshold: {
+        marginTop: 2,
+        marginLeft: 80,
+        fontSize: 19,
+        fontWeight: 'bold',
+        color: '#FF3C3C'
+    },
 })

@@ -314,6 +314,7 @@ const TextHeader = StyleSheet.create ({
         height: 70
     },
     text: {
+        marginLeft: 10,
         textAlign: 'center',
         marginTop: 20,
         fontSize: 24,
