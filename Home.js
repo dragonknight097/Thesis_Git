@@ -81,6 +81,7 @@ export default class Home extends Component {
         this.handlethreshold();
         this.handleInfo();
         this.handleInfo2();
+        this.state.socket.emit('join', {message: 'room'})
         this.state.socket.emit('home 1', { message: 'home 1'});
         this.state.socket.emit('home 2', { message: 'home 2'});
         this.state.socket.on('Data Home 1', async (data) => {

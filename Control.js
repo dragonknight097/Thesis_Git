@@ -242,7 +242,8 @@ export default class Control extends Component {
                             marginTop: 20,
                             fontWeight: 'bold'
                         }}>
-                            Minute
+                            Second
+            
                         </Text>
                         <View style = {{
                             alignItems: 'flex-end',
